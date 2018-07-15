@@ -1,0 +1,22 @@
+{
+  "name": "odenktools-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "debezium",
+    "database.password": "test1234",
+    "database.dbname": "odenktools",
+    "database.server.id": "184054",
+    "database.server.name": "dbserver1",
+    "database.whitelist": "odenktools",
+    "include.schema.changes": "false",
+    "include.unknown.datatypes": "true",
+    "table.types": "TABLE",
+    "table.blacklist": "",
+    "schema.pattern": "",
+    "database.history.kafka.bootstrap.servers": "kafka:9092",
+    "database.history.kafka.topic": "schema-changes.odenktools"
+  }
+}

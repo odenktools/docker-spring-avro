@@ -1,0 +1,22 @@
+{
+	"namespace": "odenktools.avro",
+	"type": "record",
+	"name": "ApiKey",
+	"fields": [{
+			"name": "name",
+			"type": "int"
+		}, {
+			"name": "api_key",
+			"type": ["string", "null"]
+		}, {
+			"name": "created_at",
+			"type": ["int", "null"]
+		}, {
+			"name": "updated_at",
+			"type": ["int", "null"]
+		}, {
+			"name": "modules",
+			"type": ["string", "null"]
+		}
+	]
+}

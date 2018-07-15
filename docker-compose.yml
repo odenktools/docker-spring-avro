@@ -1,0 +1,192 @@
+version: '2'
+
+networks:
+  default:
+    external:
+      name: odknetkafka
+
+services:
+  postgres:
+    container_name: postgres
+    image: debezium/postgres:latest
+    hostname: postgres
+    ports:
+      - "54320:5432"
+    networks:
+      - default
+    extra_hosts:
+      - "moby:127.0.0.1"
+    environment:
+      POSTGRES_USER: debezium
+      POSTGRES_DB: odenktools
+      POSTGRES_PASSWORD: test1234
+
+  zookeeper:
+    container_name: zookeeper
+    hostname: zookeeper
+    image: confluentinc/cp-zookeeper:4.1.0
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    networks:
+      - default
+    extra_hosts:
+      - "moby:127.0.0.1"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 36000
+    labels:
+      - io.confluent.docker.testing=true
+
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:4.1.0
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - default
+    extra_hosts:
+      - "moby:127.0.0.1"
+    environment:
+      # add the entry "127.0.0.1    kafka" to your /etc/hosts file
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      LOG_LEVEL: ERROR
+    labels:
+      - io.confluent.docker.testing=true
+    depends_on:
+      - zookeeper
+
+  registry:
+    container_name: registry
+    hostname: registry
+    image: confluentinc/cp-schema-registry:4.1.0
+    ports:
+      - "8081:8081"
+    networks:
+      - default
+    extra_hosts:
+      - "moby:127.0.0.1"
+    environment:
+      # add the entry "127.0.0.1    registry" to your /etc/hosts file
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
+      SCHEMA_REGISTRY_HOST_NAME: 'registry'
+      SCHEMA_REGISTRY_LISTENERS: "http://registry:8081"
+      SCHEMA_REGISTRY_DEBUG: 'true'
+    labels:
+      - io.confluent.docker.testing=true
+    depends_on:
+      - zookeeper
+
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest:4.1.0
+    container_name: kafka-rest
+    hostname: kafka-rest
+    ports:
+      - "8082:8082"
+    extra_hosts:
+      - "moby:127.0.0.1"
+    environment:
+      # add the entry "127.0.0.1    kafka-rest" to your /etc/hosts file
+      KAFKA_REST_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_REST_LISTENERS: "http://kafka-rest:8082"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://registry:8081"
+      KAFKA_REST_HOST_NAME: 'kafka-rest'
+      KAFKA_REST_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - zookeeper
+      - kafka
+      - registry
+
+  connect:
+    image: debezium/connect:latest
+    container_name: connect
+    hostname: connect
+    ports:
+      - "8083:8083"
+    networks:
+      - default
+    extra_hosts:
+      - "moby:127.0.0.1"
+    labels:
+      - io.confluent.docker.testing=true
+    environment:
+      # add the entry "127.0.0.1    connect" to your /etc/hosts file
+      HOST_NAME: connect
+      ADVERTISED_HOST_NAME: connect
+      ADVERTISED_PORT: 8083
+      BOOTSTRAP_SERVERS: 'kafka:9092'
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: docker-connect-configs
+      OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      STATUS_STORAGE_TOPIC: docker-connect-status
+      KEY_CONVERTER: 'io.confluent.connect.avro.AvroConverter'
+      VALUE_CONVERTER: 'io.confluent.connect.avro.AvroConverter'
+      INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://registry:8081"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://registry:8081"
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+      - registry
+
+  kafka-topics-ui:
+    container_name: kafka-topics-ui
+    image: landoop/kafka-topics-ui:0.9.3
+    hostname: kafka-topics-ui
+    ports:
+      - "8009:8000"
+    extra_hosts:
+      - "moby:127.0.0.1"
+    environment:
+      # add the entry "127.0.0.1    kafka-topics-ui" to your /etc/hosts file
+      KAFKA_REST_PROXY_URL: "http://kafka-rest:8082"
+      PROXY: "true"
+    depends_on:
+      - zookeeper
+      - kafka
+      - registry
+      - kafka-rest
+
+  ykafkaman:
+    image: sheepkiller/kafka-manager:latest
+    container_name: "ykafkaman"
+    hostname: ykafkaman
+    ports:
+      - "9010:9000"
+    networks:
+      - default
+    extra_hosts:
+      - "moby:127.0.0.1"
+    environment:
+      # add the entry "127.0.0.1    ykafkaman" to your /etc/hosts file
+      ZK_HOSTS: 'zookeeper:2181'
+      APPLICATION_SECRET: letmein
+      KM_ARGS: '-Djava.net.preferIPv4Stack=true'
+    depends_on:
+      - kafka
+
+  app-consumer:
+    container_name: app-consumer
+    hostname: app-consumer
+    image: odk-avro:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    networks:
+      - default
+    extra_hosts:
+      - "moby:127.0.0.1"
+    depends_on:
+      - zookeeper
+      - kafka
+      - registry
+      - postgres
