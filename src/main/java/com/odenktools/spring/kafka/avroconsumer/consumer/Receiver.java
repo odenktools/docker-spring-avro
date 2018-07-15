@@ -1,6 +1,7 @@
 package com.odenktools.spring.kafka.avroconsumer.consumer;
 
 import com.odenktools.spring.kafka.avroconsumer.models.ApiKey;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,12 +21,12 @@ public class Receiver {
 		return latch;
 	}
 
-	@KafkaListener(topics = {"dbserver1.public.api_key"}, containerFactory = "kafkaListenerContainerFactory")
-	public void receive(ApiKey record) {
+	@KafkaListener(topics = {"dbserver1.public.api_keys"}, containerFactory = "kafkaListenerContainerFactory")
+	public void receive(ConsumerRecord record) {
 
 		System.out.println(record.toString());
-		//LOG.info("received message='{}'", message);
-		//System.out.println(String.format("Topic - %s, Partition - %d, Value: %s", "ssss", record.partition(), record.value()));
+		LOG.info("received message ='{}'", record.value());
+		System.out.println(String.format("Topic - %s, Partition - %d, Value: %s", "ssss", record.partition(), record.value()));
 		getLatch().countDown();
 	}
 }

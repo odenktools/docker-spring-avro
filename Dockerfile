@@ -1,8 +1,10 @@
-FROM openjdk:8-jre-alpine
+FROM nimmis/java:openjdk-8-jdk
 MAINTAINER odenktools.com
 
 COPY target/avro-consumer-0.0.1-SNAPSHOT.jar /opt/avro-consumer/
+COPY wrapper.sh /opt/avro-consumer/
 WORKDIR /opt/avro-consumer
-ENTRYPOINT ["/usr/bin/java"]
-CMD ["-jar", "/opt/avro-consumer/avro-consumer-0.0.1-SNAPSHOT.jar"]
+RUN /bin/bash -c 'chmod +x wrapper.sh'
+ENTRYPOINT ["/bin/bash"]
+CMD ["wrapper.sh"]
 EXPOSE 8090

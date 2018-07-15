@@ -124,8 +124,8 @@ services:
       CONFIG_STORAGE_TOPIC: docker-connect-configs
       OFFSET_STORAGE_TOPIC: docker-connect-offsets
       STATUS_STORAGE_TOPIC: docker-connect-status
-      KEY_CONVERTER: 'io.confluent.connect.avro.AvroConverter'
-      VALUE_CONVERTER: 'io.confluent.connect.avro.AvroConverter'
+      KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://registry:8081"
@@ -185,8 +185,13 @@ services:
       - default
     extra_hosts:
       - "moby:127.0.0.1"
+    environment:
+      KAFKA_HOST: 'kafka:9092'
+      DATABASE_HOST: 'postgres'
+      DATABASE_PORT: 5432
+      DATABASE_NAME: odenktools
+      DATABASE_USER: debezium
+      DATABASE_PASSWORD: test1234
     depends_on:
-      - zookeeper
       - kafka
-      - registry
       - postgres

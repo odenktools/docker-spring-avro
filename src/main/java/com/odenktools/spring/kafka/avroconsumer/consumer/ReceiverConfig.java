@@ -28,9 +28,9 @@ public class ReceiverConfig {
 	public Map<String, Object> consumerConfigs() {
 
 		Map<String, Object> props = new HashMap<>();
-		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroDeserializer.class);
+		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, "spring-customer");
 		props.put("auto.create.topics.enable", "false");
 		//props.put(ConsumerConfig.CLIENT_ID_CONFIG, "inventory-connector");
@@ -39,15 +39,15 @@ public class ReceiverConfig {
 	}
 
 	@Bean
-	public ConsumerFactory<String, ApiKey> consumerFactory() {
+	public ConsumerFactory<String, String> consumerFactory() {
 
 		return new DefaultKafkaConsumerFactory<>(consumerConfigs());
 	}
 
 	@Bean
-	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ApiKey>> kafkaListenerContainerFactory() {
+	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
 
-		ConcurrentKafkaListenerContainerFactory<String, ApiKey> factory = new ConcurrentKafkaListenerContainerFactory<>();
+		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
 		factory.getContainerProperties().setPollTimeout(3000);
 		return factory;

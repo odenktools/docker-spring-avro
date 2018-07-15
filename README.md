@@ -34,6 +34,12 @@ OR
 curl -X POST -H "Content-Type: application/json" -d @register-postgres.json http://localhost:8083/connectors
 ```
 
+#### LIST ALL AVAILABLE TOPICS
+
+```bash
+docker-compose exec kafka kafka-topics --zookeeper zookeeper:2181 --list
+```
+
 #### REMOVE ALL IMAGES
 
 ```bash
