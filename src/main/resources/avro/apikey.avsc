@@ -1,5 +1,5 @@
 {
-	"namespace": "odenktools.avro",
+	"namespace": "example.avro",
 	"type": "record",
 	"name": "ApiKey",
 	"fields": [{

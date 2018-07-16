@@ -45,3 +45,13 @@ docker-compose exec kafka kafka-topics --zookeeper zookeeper:2181 --list
 ```bash
 docker-compose down --remove-orphans
 ```
+
+#### INSERT APIKEYS
+
+```
+INSERT INTO "public"."api_keys"("key_code", "secret_key", "modules", "created_at", "updated_at") 
+VALUES ('test', 'test123', 'mymodules', '2018-07-17 00:42:01', '2018-07-17 00:42:04');
+
+INSERT INTO "public"."api_keys"("key_code", "secret_key", "modules", "created_at", "updated_at") 
+VALUES ('test1', 'test1234', 'mymodules', '2018-07-17 00:42:02', '2018-07-17 00:42:05');
+```

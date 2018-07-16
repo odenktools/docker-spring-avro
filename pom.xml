@@ -111,6 +111,14 @@
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
         </dependency>
+
+        <!-- Confluent Serializer -->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -124,6 +132,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <!-- Confluent Repository -->
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>http://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -144,7 +160,7 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/resources/avro/</sourceDirectory>
-                            <outputDirectory>${project.build.directory}/generated/avro</outputDirectory>
+                            <outputDirectory>${project.basedir}/src/main/generated/avro</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

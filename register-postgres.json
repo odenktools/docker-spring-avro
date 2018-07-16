@@ -1,22 +1,17 @@
 {
   "name": "odenktools-connector",
   "config": {
-    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-    "tasks.max": "1",
-    "database.hostname": "postgres",
-    "database.port": "5432",
-    "database.user": "debezium",
-    "database.password": "test1234",
-    "database.dbname": "odenktools",
-    "database.server.id": "184054",
-    "database.server.name": "dbserver1",
-    "database.whitelist": "odenktools",
-    "include.schema.changes": "false",
-    "include.unknown.datatypes": "true",
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": 10,
+    "connection.url": "jdbc:postgresql://postgres:5432/odenktools?currentSchema=public",
+    "connection.user": "debezium",
+    "connection.password": "test1234",
+    "mode": "incrementing",
+    "timestamp.column.name": "created_at",
+    "incrementing.column.name": "id",
+    "topic.prefix": "kfk-",
+    "table.poll.interval.ms": 10000,
     "table.types": "TABLE",
-    "table.blacklist": "",
-    "schema.pattern": "",
-    "database.history.kafka.bootstrap.servers": "kafka:9092",
-    "database.history.kafka.topic": "schema-changes.odenktools"
+    "table.blacklist": "databasechangelog,databasechangeloglock"
   }
 }

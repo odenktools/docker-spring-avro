@@ -103,7 +103,7 @@ services:
       - registry
 
   connect:
-    image: confluentinc/cp-kafka-connect:4.1.0
+    image: debezium/connect:latest
     container_name: connect
     hostname: connect
     ports:
@@ -112,33 +112,29 @@ services:
       - default
     extra_hosts:
       - "moby:127.0.0.1"
+    labels:
+      - io.confluent.docker.testing=true
     environment:
       # add the entry "127.0.0.1    connect" to your /etc/hosts file
-      CONNECT_BOOTSTRAP_SERVERS: 'kafka:9092'
-      CONNECT_REST_PORT: 8083
-      CONNECT_GROUP_ID: compose-connect-group
-      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
-      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
-      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
-      CONNECT_KEY_CONVERTER: 'io.confluent.connect.avro.AvroConverter'
-      CONNECT_VALUE_CONVERTER: 'io.confluent.connect.avro.AvroConverter'
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://registry:8081'
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://registry:8081'
-      CONNECT_INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_REST_ADVERTISED_HOST_NAME: 'connect'
-      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
-      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_PLUGIN_PATH: "/usr/share/java"
+      HOST_NAME: connect
+      ADVERTISED_HOST_NAME: connect
+      ADVERTISED_PORT: 8083
+      BOOTSTRAP_SERVERS: 'kafka:9092'
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: docker-connect-configs
+      OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      STATUS_STORAGE_TOPIC: docker-connect-status
+      KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://registry:8081"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://registry:8081"
     depends_on:
       - postgres
       - zookeeper
       - kafka
       - registry
-      - kafka-rest
 
   kafka-topics-ui:
     container_name: kafka-topics-ui
@@ -191,7 +187,6 @@ services:
       - "moby:127.0.0.1"
     environment:
       KAFKA_HOST: 'kafka:9092'
-      KAFKA_SCHEMA_URL: 'registry:8081'
       DATABASE_HOST: 'postgres'
       DATABASE_PORT: 5432
       DATABASE_NAME: odenktools
