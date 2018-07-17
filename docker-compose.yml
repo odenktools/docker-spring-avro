@@ -198,5 +198,8 @@ services:
       DATABASE_USER: debezium
       DATABASE_PASSWORD: test1234
     depends_on:
-      - kafka
       - postgres
+      - zookeeper
+      - kafka
+      - registry
+      - kafka-rest

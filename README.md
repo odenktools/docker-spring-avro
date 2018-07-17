@@ -55,3 +55,13 @@ VALUES ('test', 'test123', 'mymodules', '2018-07-17 00:42:01', '2018-07-17 00:42
 INSERT INTO "public"."api_keys"("key_code", "secret_key", "modules", "created_at", "updated_at") 
 VALUES ('test1', 'test1234', 'mymodules', '2018-07-17 00:42:02', '2018-07-17 00:42:05');
 ```
+
+### INSERT COMPANIES
+
+```
+INSERT INTO public.companies
+    ("name", email, phone_number, "password", is_active, is_verified, last_login, created_at, updated_at, deleted_at)
+VALUES
+    ('test', 'test@gmail.com', '0896718828282', 'kwqlekkqlweklqwe', 1, 1, null, '2018-07-17 00:42:02', 
+    '2018-07-17 00:42:02', null);
+```
