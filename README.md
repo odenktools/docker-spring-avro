@@ -13,7 +13,7 @@ docker network create --driver bridge odknetkafka
 #### BUILD SPRING DOCKER
 
 ```bash
-docker build --file=Dockerfile --tag=odk-avro:latest --rm=true .
+docker build --file=Dockerfile --tag=spring-odk-avro:latest --rm=true .
 ```
 
 #### RUNNING DOCKER

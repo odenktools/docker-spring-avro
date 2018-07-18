@@ -147,6 +147,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
             <!-- avro-maven-plugin -->
             <plugin>
                 <groupId>org.apache.avro</groupId>
@@ -165,6 +166,32 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- DOCKER -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.3</version>
+                <configuration>
+                    <!-- replace `odenktools` with your docker id-->
+                    <repository>odenktools/spring-odk-avro</repository>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

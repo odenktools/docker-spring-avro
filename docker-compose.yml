@@ -102,6 +102,21 @@ services:
       - kafka
       - registry
 
+  schema-registry-ui:
+    image: landoop/schema-registry-ui
+    hostname: schema-registry-ui
+    container_name: schema-registry-ui
+    ports:
+      - "8002:8000"
+    extra_hosts:
+      - "moby:127.0.0.1"
+    depends_on:
+      - kafka
+      - registry
+    environment:
+      # add the entry "127.0.0.1    schema-registry-ui" to your /etc/hosts file
+      SCHEMAREGISTRY_URL: 'http://registry:8081'
+
   connect:
     image: confluentinc/cp-kafka-connect:4.1.0
     container_name: connect
@@ -113,6 +128,7 @@ services:
     extra_hosts:
       - "moby:127.0.0.1"
     environment:
+      JAVA_OPTS: "-Xms2g -Xmx2g"
       # add the entry "127.0.0.1    connect" to your /etc/hosts file
       CONNECT_BOOTSTRAP_SERVERS: 'kafka:9092'
       CONNECT_REST_PORT: 8083
@@ -133,6 +149,8 @@ services:
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_PLUGIN_PATH: "/usr/share/java"
+    volumes:
+      - ./kafka-connect:/etc/kafka-connect/jars
     depends_on:
       - postgres
       - zookeeper
@@ -158,10 +176,10 @@ services:
       - registry
       - kafka-rest
 
-  ykafkaman:
+  kafkaman:
     image: sheepkiller/kafka-manager:latest
-    container_name: "ykafkaman"
-    hostname: ykafkaman
+    container_name: kafkaman
+    hostname: kafkaman
     ports:
       - "9010:9000"
     networks:
@@ -175,31 +193,4 @@ services:
       KM_ARGS: '-Djava.net.preferIPv4Stack=true'
     depends_on:
       - kafka
-
-  app-consumer:
-    container_name: app-consumer
-    hostname: app-consumer
-    image: odk-avro:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8090:8090"
-    networks:
-      - default
-    extra_hosts:
-      - "moby:127.0.0.1"
-    environment:
-      KAFKA_HOST: 'kafka:9092'
-      KAFKA_SCHEMA_URL: 'registry:8081'
-      DATABASE_HOST: 'postgres'
-      DATABASE_PORT: 5432
-      DATABASE_NAME: odenktools
-      DATABASE_USER: debezium
-      DATABASE_PASSWORD: test1234
-    depends_on:
-      - postgres
       - zookeeper
-      - kafka
-      - registry
-      - kafka-rest

@@ -42,7 +42,7 @@ public class Receiver {
 		getLatch().countDown();
 	}
 
-	@KafkaListener(topics = {"kfk-companies"})
+	@KafkaListener(topics = {"kfk-companies"}, containerFactory = "kafkaListenerContainerFactory")
 	public void receiveCompanies(GenericRecord record) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
